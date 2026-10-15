@@ -2,7 +2,6 @@
  * Storage Service Unit & Verification Test
  */
 
-// Simple LocalStorage polyfill for Node test environment
 const storageStore = new Map<string, string>();
 const mockLocalStorage = {
   getItem: (key: string) => storageStore.get(key) || null,
@@ -27,11 +26,9 @@ const mockLocalStorage = {
 };
 
 import {
-  DEFAULT_SETTINGS,
   calculateStats,
   exportBackup,
   getAllProgress,
-  getDailySession,
   getKanjiProgress,
   getSettings,
   importBackupData,
@@ -39,7 +36,7 @@ import {
   recordKanjiReview,
   saveSettings,
   setKanjiStatus,
-} from './storageService.ts';
+} from '../src/services/storageService.ts';
 
 function assert(condition: boolean, msg: string) {
   if (!condition) {
@@ -77,7 +74,7 @@ async function runTests() {
   // Test 4: Daily Session & Queue Generation
   const candidateIds = ['日', '月', '木', '山', '川', '火', '水', '人', '金', '土', '年', '時'];
   const session = initializeDailyQueue(candidateIds);
-  assert(session.queue.length === 50 || session.queue.length === candidateIds.length, 'Queue populated with available kanji');
+  assert(session.queue.length === candidateIds.length, 'Queue populated with available kanji');
   assert(session.completed.length === 0, 'Session completed list is empty initially');
   assert(session.currentStreak === 0, 'Current streak starts at 0');
 
