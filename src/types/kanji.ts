@@ -37,6 +37,8 @@ export interface KanjiItem {
   onyomi: ReadingItem[];
   kunyomi: ReadingItem[];
   strokePaths?: string[]; // SVG paths (KanjiVG) for animated / step-by-step rendering
+  grade?: number;
+  frequency?: number;
   examples: ExampleCompound[];
   sentences?: ExampleSentence[];
   status?: StudyStatus;

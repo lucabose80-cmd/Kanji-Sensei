@@ -166,6 +166,29 @@ export function setKanjiStatus(id: string, status: KanjiStatus): KanjiProgress {
   return updated;
 }
 
+export function setMultipleKanjiStatus(ids: string[], status: KanjiStatus): void {
+  if (typeof window === 'undefined' || ids.length === 0) return;
+  const all = getAllProgress();
+  const now = Date.now();
+  for (const id of ids) {
+    const current = all[id] || {
+      id,
+      status: 'unlearned',
+      lastReviewed: null,
+      reviewCount: 0,
+      correctCount: 0,
+      history: [],
+    };
+    all[id] = {
+      ...current,
+      status,
+      lastReviewed: now,
+    };
+  }
+  localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(all));
+  notifyStorageChange();
+}
+
 /**
  * Record a practice/review attempt for a Kanji
  */
@@ -510,7 +533,7 @@ export async function uploadBackupFile(file: File): Promise<{ success: boolean; 
     const text = await file.text();
     const parsed = JSON.parse(text);
     return importBackupData(parsed);
-  } catch (err) {
+  } catch {
     return {
       success: false,
       message: 'Datei konnte nicht gelesen oder geparst werden. Bitte g\u00fcltige JSON-Datei w\u00e4hlen.',

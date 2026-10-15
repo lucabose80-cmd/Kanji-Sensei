@@ -12,6 +12,7 @@ import {
   saveDailySession,
   saveSettings,
   setKanjiStatus,
+  setMultipleKanjiStatus,
   uploadBackupFile,
 } from '../services/storageService';
 import type {
@@ -34,7 +35,7 @@ export function useStorage(totalKanjiCount?: number) {
   const [progress, setProgressState] = useState<Record<string, KanjiProgress>>(() => getAllProgress());
   const [stats, setStatsState] = useState<LearningStats>(() => calculateStats(totalKanjiCount));
   const [canInstall, setCanInstall] = useState(false);
-  const [isPWA, setIsPWA] = useState(false);
+  const [isPWA] = useState(() => checkIsStandalone());
 
   // Sync state whenever storage changes (e.g. from any tab or service call)
   const refresh = useCallback(() => {
@@ -47,7 +48,6 @@ export function useStorage(totalKanjiCount?: number) {
   useEffect(() => {
     const unsubscribeStorage = onStorageChange(refresh);
     const unsubscribeInstall = onInstallAvailabilityChange(setCanInstall);
-    setIsPWA(checkIsStandalone());
 
     return () => {
       unsubscribeStorage();
@@ -64,6 +64,11 @@ export function useStorage(totalKanjiCount?: number) {
     const updated = setKanjiStatus(id, status);
     refresh();
     return updated;
+  }, [refresh]);
+
+  const markMultipleKanjiStatus = useCallback((ids: string[], status: KanjiStatus) => {
+    setMultipleKanjiStatus(ids, status);
+    refresh();
   }, [refresh]);
 
   const recordReview = useCallback(
@@ -97,6 +102,7 @@ export function useStorage(totalKanjiCount?: number) {
     stats,
     getKanji: getKanjiProgress,
     markKanjiStatus,
+    markMultipleKanjiStatus,
     recordReview,
     initQueue,
     refresh,
