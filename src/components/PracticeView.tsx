@@ -631,24 +631,24 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         {phase === 'revealed' && (
           <div className="flex flex-col items-center animate-fade-in">
             {/* Header prompt reminder */}
-            <div className="text-center mb-5">
+            <div className="text-center mb-4 sm:mb-5">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Vergleiche mit deinem Notizheft
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white break-words">
                 {currentItem.kanji.primaryMeaning}
               </h2>
             </div>
 
             {/* Side-by-side or Centered Tianzige Practice Grid */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6 w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-5 sm:mb-6 w-full">
               {/* User Drawing (if digital canvas was used) */}
               {userDrawing && (
                 <div className="flex flex-col items-center">
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1">
                     <PenTool className="w-3 h-3" /> Deine Zeichnung
                   </span>
-                  <div className="relative overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-amber-50/20 dark:bg-slate-900/90 w-[200px] h-[200px] flex items-center justify-center shadow-inner">
+                  <div className="relative overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-amber-50/20 dark:bg-slate-900/90 w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] flex items-center justify-center shadow-inner">
                     <svg
                       viewBox="0 0 100 100"
                       className="absolute inset-0 w-full h-full pointer-events-none"
@@ -667,8 +667,8 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
 
               {/* Master Kanji in Tianzige 2x2 Grid with Step-by-Step Viewer */}
               <div className="flex flex-col items-center">
-                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1.5 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Original Kanji (Tianzige 2x2 Raster)
+                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1.5 flex items-center gap-1 text-center">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Original Kanji (Tianzige 2x2 Raster)
                 </span>
                 <KanjiGridBox
                   kanji={currentItem.kanji.kanji}
@@ -682,15 +682,15 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             </div>
 
             {/* Kanji Details Card: Readings, Radicals, JLPT */}
-            <div className="w-full rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-4 mb-6">
+            <div className="w-full rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3 sm:p-4 mb-5 sm:mb-6">
               {/* Readings: On-Yomi & Kun-Yomi */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pb-3 border-b border-slate-200 dark:border-slate-700">
                 {/* On-Yomi */}
-                <div className="p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">
+                <div className="p-2 sm:p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
+                  <div className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wide">
                     On-Yomi (音読み - Katakana)
                   </div>
-                  <div className="text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+                  <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5 break-words">
                     {currentItem.kanji.onyomi.length > 0
                       ? currentItem.kanji.onyomi
                           .map((o) => `${o.kana} (${o.romaji})`)
@@ -700,11 +700,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                 </div>
 
                 {/* Kun-Yomi */}
-                <div className="p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">
+                <div className="p-2 sm:p-2.5 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
+                  <div className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wide">
                     Kun-Yomi (訓読み - Hiragana)
                   </div>
-                  <div className="text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+                  <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5 break-words">
                     {currentItem.kanji.kunyomi.length > 0
                       ? currentItem.kanji.kunyomi
                           .map((k) => `${k.kana} (${k.romaji})`)
@@ -735,19 +735,19 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
               {/* Radical Decomposition (Bausteine / Zerlegung) */}
               {decompositions && decompositions.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700/60">
-                  <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                  <div className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide flex items-center gap-1.5 mb-2">
                     <span>🧩 Bausteine / Radikale:</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     {decompositions.map((comp, idx) => (
                       <div
                         key={idx}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xs text-xs"
+                        className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xs text-xs"
                       >
-                        <span className="font-serif font-bold text-base text-indigo-600 dark:text-indigo-400">
+                        <span className="font-serif font-bold text-sm sm:text-base text-indigo-600 dark:text-indigo-400">
                           {comp.symbol}
                         </span>
-                        <span className="text-slate-700 dark:text-slate-200 font-medium">
+                        <span className="text-slate-700 dark:text-slate-200 font-medium break-words">
                           {comp.name}
                         </span>
                       </div>
@@ -759,30 +759,32 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
 
             {/* Example Compounds (Jukugo) & Sentences with Furigana */}
             {currentItem.kanji.examples.length > 0 && (
-              <div className="w-full mb-6 text-left">
+              <div className="w-full mb-5 sm:mb-6 text-left">
                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5" /> Häufige Wörter & Beispielsätze (Jukugo)
+                  <BookOpen className="w-3.5 h-3.5 shrink-0" /> Häufige Wörter & Beispielsätze (Jukugo)
                 </h4>
 
                 <div className="space-y-2">
                   {currentItem.kanji.examples.map((ex, exIdx) => (
                     <div
                       key={`ex-${exIdx}`}
-                      className="p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 text-sm"
+                      className="p-2 sm:p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2 text-xs sm:text-sm"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                         {/* Word with Furigana */}
-                        <ruby className="text-base font-bold text-slate-900 dark:text-white">
+                        <ruby className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                           {ex.word}
                           <rt className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">
                             {ex.furigana}
                           </rt>
                         </ruby>
-                        <span className="text-xs text-slate-400 font-mono">({ex.romaji})</span>
+                        <span className="text-[11px] sm:text-xs text-slate-400 font-mono">({ex.romaji})</span>
                       </div>
 
-                      <div className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
-                        {ex.meaning}
+                      <div className="flex-1 min-w-0 text-right">
+                        <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 truncate block" title={ex.meaning}>
+                          {ex.meaning}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -790,10 +792,10 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                   {/* Sample Sentence if available */}
                   {currentItem.kanji.sentences && currentItem.kanji.sentences.length > 0 && (
                     <div className="p-2.5 rounded-lg bg-amber-50/50 dark:bg-slate-900/40 border border-amber-200/60 dark:border-slate-700/60 text-xs">
-                      <div className="font-medium text-slate-800 dark:text-slate-200">
+                      <div className="font-medium text-slate-800 dark:text-slate-200 break-words">
                         {currentItem.kanji.sentences[0].japanese}
                       </div>
-                      <div className="text-slate-500 dark:text-slate-400 mt-0.5">
+                      <div className="text-slate-500 dark:text-slate-400 mt-0.5 break-words">
                         {currentItem.kanji.sentences[0].meaning}
                       </div>
                     </div>
@@ -803,14 +805,14 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             )}
 
             {/* Evaluation Decision Buttons */}
-            <div className="w-full pt-2 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row gap-3">
+            <div className="w-full pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row gap-2.5 sm:gap-3">
               {/* Mark wrong / repeat button */}
               <button
                 type="button"
                 onClick={handleMarkWrong}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm sm:text-base text-rose-700 dark:text-rose-300 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border-2 border-rose-200 dark:border-rose-900 transition-all hover:scale-[1.01]"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm md:text-base text-rose-700 dark:text-rose-300 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border-2 border-rose-200 dark:border-rose-900 transition-all hover:scale-[1.01]"
               >
-                <XCircle className="w-5 h-5 text-rose-500" />
+                <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 shrink-0" />
                 <span>❌ Noch nicht sicher / Nochmal üben</span>
               </button>
 
@@ -818,9 +820,9 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
               <button
                 type="button"
                 onClick={handleMarkCorrect}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm sm:text-base text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.01]"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm md:text-base text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.01]"
               >
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span>✅ Richtig gemalt!</span>
               </button>
             </div>
