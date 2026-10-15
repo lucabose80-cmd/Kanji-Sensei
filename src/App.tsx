@@ -84,17 +84,17 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
+    <div className={`min-h-screen flex flex-col w-full overflow-x-hidden transition-colors ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
       {/* App Navigation Bar */}
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-4">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-rose-500 flex items-center justify-center text-white font-serif font-bold text-lg shadow-sm">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-500 to-rose-500 flex items-center justify-center text-white font-serif font-bold text-base sm:text-lg shadow-sm shrink-0">
               漢
             </div>
             <div>
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
+              <span className="font-extrabold text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white truncate hidden min-[380px]:inline-block">
                 Kanji Sensei
               </span>
               <span className="hidden md:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
@@ -104,18 +104,19 @@ function App() {
           </div>
 
           {/* Navigation Tabs: Browser vs Practice */}
-          <nav className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60">
+          <nav className="flex items-center gap-1 p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('browser')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 activeTab === 'browser'
                   ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              <LayoutGrid className="w-4 h-4" />
-              <span>Kanji-Auswahl ({TOTAL_KANJI_COUNT.toLocaleString('de-DE')})</span>
+              <LayoutGrid className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">Kanji-Auswahl ({TOTAL_KANJI_COUNT.toLocaleString('de-DE')})</span>
+              <span className="sm:hidden">Auswahl</span>
             </button>
 
             <button
@@ -124,23 +125,24 @@ function App() {
                 setCustomPracticePool(null);
                 setActiveTab('practice');
               }}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 activeTab === 'practice'
                   ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              <PenTool className="w-4 h-4" />
-              <span>Tagesübung</span>
+              <PenTool className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">Tagesübung</span>
+              <span className="sm:hidden">Übung</span>
             </button>
           </nav>
 
           {/* Right Header Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setShowSettingsModal(true)}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               title="Tagesziel & Einstellungen"
             >
               <Sliders className="w-4 h-4" />
@@ -150,7 +152,7 @@ function App() {
               <button
                 type="button"
                 onClick={() => setSessionKey((k) => k + 1)}
-                className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 title="Session neu starten"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -160,7 +162,7 @@ function App() {
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               title={isDark ? 'Heller Modus' : 'Dunkler Modus'}
             >
               {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
@@ -379,7 +381,7 @@ function App() {
         {activeTab === 'browser' ? (
           <KanjiBrowser onStartPractice={handleStartPracticeWithIds} />
         ) : (
-          <div className="max-w-4xl mx-auto px-4 py-4 sm:py-8">
+          <div className="max-w-4xl mx-auto px-2.5 sm:px-4 py-4 sm:py-8">
             <PracticeView
               key={sessionKey}
               kanjiPool={customPracticePool || currentLearningKanji}

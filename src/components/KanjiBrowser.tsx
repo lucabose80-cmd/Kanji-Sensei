@@ -329,7 +329,7 @@ export const KanjiBrowser: React.FC<KanjiBrowserProps> = ({
     sortBy !== 'frequency-asc';
 
   return (
-    <div className={`w-full max-w-7xl mx-auto px-3 sm:px-6 py-6 space-y-6 text-slate-800 dark:text-slate-100 ${className}`}>
+    <div className={`w-full max-w-7xl mx-auto px-2.5 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 text-slate-800 dark:text-slate-100 ${className}`}>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-2xl shadow-xl border border-slate-700 dark:border-slate-200 text-sm font-medium animate-in slide-in-from-bottom-3 duration-200">

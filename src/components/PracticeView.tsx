@@ -290,30 +290,30 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
-            <span className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="p-2.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
+            <span className="text-xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400">
               {completedItems.length}
             </span>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
               Geübte Kanji
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
-            <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+          <div className="p-2.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
+            <span className="text-xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
               {accuracy}%
             </span>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
               Direkt im 1. Versuch
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
-            <span className="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400">
+          <div className="p-2.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
+            <span className="text-xl sm:text-3xl font-black text-amber-600 dark:text-amber-400">
               {totalRepeatsNeeded}
             </span>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
               Wiederholungen
             </div>
           </div>
@@ -348,11 +348,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                       {item.kanji.primaryMeaning}
                     </span>
                     {item.masteredFirstTry ? (
-                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">
+                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded shrink-0">
                         <Check className="w-3 h-3" /> 1. Versuch
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded">
+                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded shrink-0">
                         <RotateCcw className="w-3 h-3" /> Wiederholt
                       </span>
                     )}
@@ -373,11 +373,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 justify-center">
           <button
             type="button"
             onClick={handleAddMoreKanji}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.01]"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.01]"
           >
             <RefreshCw className="w-4 h-4" />
             Noch 5 weitere üben
@@ -387,7 +387,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             <button
               type="button"
               onClick={onBackToOverview}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors border border-slate-300 dark:border-slate-700"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors border border-slate-300 dark:border-slate-700"
             >
               <BookOpen className="w-4 h-4" />
               Zur Übersicht
@@ -396,7 +396,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             <button
               type="button"
               onClick={handleRestartSession}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors border border-slate-300 dark:border-slate-700"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors border border-slate-300 dark:border-slate-700"
             >
               <RotateCcw className="w-4 h-4" />
               Session wiederholen
@@ -419,33 +419,33 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   // RENDER: Active Practice Session (Prompt & Reveal Views)
   // -------------------------------------------------------------
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 py-4 sm:py-6">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-3 sm:py-6">
       {/* Top Header & Progress Bar */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 font-bold border border-indigo-200 dark:border-indigo-800">
+      <div className="mb-4 sm:mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span className="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 font-bold border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
               Kanji {completedCount + 1} von {initialCount}
             </span>
 
             {isCurrentlyRepeat && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 font-bold border border-amber-200 dark:border-amber-800 text-xs animate-pulse">
-                <RotateCcw className="w-3 h-3" /> Wiederholung ({currentItem.attempts})
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 font-bold border border-amber-200 dark:border-amber-800 text-xs animate-pulse whitespace-nowrap">
+                <RotateCcw className="w-3 h-3 shrink-0" /> Wiederholung ({currentItem.attempts})
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {remainingInQueue > 1 && (
-              <span className="text-xs text-slate-400 dark:text-slate-500">
-                Noch {remainingInQueue} in Warteschlange
+              <span className="text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                Noch {remainingInQueue} <span className="hidden sm:inline">in Warteschlange</span>
               </span>
             )}
             <span
-              className="inline-flex items-center gap-1 font-bold text-orange-500"
+              className="inline-flex items-center gap-1 font-bold text-orange-500 whitespace-nowrap shrink-0"
               title={`${streakDays} ${streakDays === 1 ? 'Tag' : 'Tage'} in Folge geübt`}
             >
-              <Flame className="w-4 h-4 fill-current" />
+              <Flame className="w-4 h-4 fill-current shrink-0" />
               <span>{streakDays} {streakDays === 1 ? 'Tag' : 'Tage'}</span>
             </span>
           </div>
@@ -477,80 +477,80 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
       </div>
 
       {/* Main Study Card */}
-      <div className="rounded-2xl bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 shadow-md p-5 sm:p-7 transition-all">
+      <div className="rounded-2xl bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 shadow-md p-4 sm:p-6 md:p-7 transition-all">
         {/* =======================================================
             PHASE 1: PROMPT VIEW (Notizheft Schreibaufforderung)
             ======================================================= */}
         {phase === 'prompt' && (
           <div className="flex flex-col items-center text-center animate-fade-in">
             {/* Visual Callout Box for Notebook Writing */}
-            <div className="w-full p-4 mb-6 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 flex items-center gap-3.5 text-left">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center text-2xl shrink-0 shadow-xs">
+            <div className="w-full p-3 sm:p-4 mb-4 sm:mb-6 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 flex items-center gap-2.5 sm:gap-3.5 text-left">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center text-xl sm:text-2xl shrink-0 shadow-xs">
                 📝
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-amber-900 dark:text-amber-200">
+                <div className="text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200">
                   Schreibe dieses Zeichen jetzt in dein Notizheft!
                 </div>
-                <div className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+                <div className="text-[11px] sm:text-xs text-amber-700 dark:text-amber-400 mt-0.5">
                   Zeichne das Kanji aus dem Gedächtnis mit der korrekten Strichfolge auf Papier.
                 </div>
               </div>
             </div>
 
             {/* Prominent German Meaning Display */}
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                 Bedeutung
               </span>
-              <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-1 mb-2">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-1 mb-1.5 sm:mb-2 break-words">
                 {currentItem.kanji.primaryMeaning}
               </h1>
 
               {currentItem.kanji.meanings.length > 1 && (
-                <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-base text-slate-500 dark:text-slate-400 break-words">
                   Auch: {currentItem.kanji.meanings.slice(1).join(', ')}
                 </p>
               )}
             </div>
 
             {/* Optional Collapsible Hints */}
-            <div className="w-full mb-6">
+            <div className="w-full mb-5 sm:mb-6">
               <button
                 type="button"
                 onClick={() => setShowHints(!showHints)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-600"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors border border-slate-200 dark:border-slate-600"
               >
-                <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
+                <HelpCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 <span>{showHints ? 'Hinweise verbergen' : '💡 Hinweise aufklappen'}</span>
-                {showHints ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                {showHints ? <ChevronUp className="w-3.5 h-3.5 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 shrink-0" />}
               </button>
 
               {showHints && (
-                <div className="mt-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-2 text-center text-xs animate-fade-in">
-                  <div className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                <div className="mt-3 p-2.5 sm:p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-1.5 sm:gap-2 text-center text-xs animate-fade-in">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
+                    <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold">
                       Striche
                     </span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
                       {currentItem.kanji.strokeCount} Striche
                     </span>
                   </div>
 
-                  <div className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
+                    <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold">
                       Level
                     </span>
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-sm">
+                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-xs sm:text-sm">
                       {currentItem.kanji.jlpt}
                     </span>
                   </div>
 
-                  <div className="p-2 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-slate-800 shadow-2xs">
+                    <span className="text-slate-400 block text-[9px] sm:text-[10px] uppercase font-bold">
                       Radikal
                     </span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm break-words">
                       {currentItem.kanji.radical.symbol} ({currentItem.kanji.radical.meaning})
                     </span>
                   </div>
@@ -569,7 +569,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                             <span className="font-serif font-bold text-indigo-600 dark:text-indigo-400">
                               {comp.symbol}
                             </span>
-                            <span>{comp.name}</span>
+                            <span className="break-words">{comp.name}</span>
                           </span>
                         ))}
                       </div>
@@ -586,7 +586,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                 onClick={() => setShowCanvas(!showCanvas)}
                 className="text-xs font-semibold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 flex items-center gap-1.5 transition-colors mb-3"
               >
-                <PenTool className="w-3.5 h-3.5" />
+                <PenTool className="w-3.5 h-3.5 shrink-0" />
                 <span>
                   {showCanvas
                     ? 'Digitales Zeichenpad einklappen'
@@ -595,7 +595,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
               </button>
 
               {showCanvas && (
-                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 flex flex-col items-center animate-fade-in">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 flex flex-col items-center animate-fade-in max-w-full">
                   <PracticeCanvas
                     width={260}
                     height={260}
@@ -616,11 +616,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             <button
               type="button"
               onClick={handleReveal}
-              className="w-full sm:w-auto min-w-[280px] px-8 py-4 rounded-xl font-extrabold text-base sm:text-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2.5"
+              className="w-full max-w-sm sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-extrabold text-sm sm:text-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 sm:gap-2.5"
             >
-              <Eye className="w-5 h-5" />
+              <Eye className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
               <span>Aufdecken / Fertig gemalt</span>
-              <ArrowRight className="w-5 h-5 ml-1" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-0.5 sm:ml-1 shrink-0" />
             </button>
           </div>
         )}
