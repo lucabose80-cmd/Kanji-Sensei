@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import PracticeView from './components/PracticeView';
 import { KanjiBrowser } from './components/KanjiBrowser';
-import { ALL_KANJI } from './data/allKanji';
+import { ALL_KANJI, TOTAL_KANJI_COUNT } from './data/allKanji';
 import { useStorage } from './hooks/useStorage';
-import { BookMarked, Moon, Sun, RotateCcw, LayoutGrid, PenTool } from 'lucide-react';
+import { BookMarked, Moon, Sun, RotateCcw, LayoutGrid, PenTool, Sliders } from 'lucide-react';
 import type { KanjiItem } from './types/kanji';
 
 type ActiveTab = 'browser' | 'practice';
@@ -13,8 +13,9 @@ function App() {
   const [sessionKey, setSessionKey] = useState(0);
   const [activeTab, setActiveTab] = useState<ActiveTab>('browser');
   const [customPracticePool, setCustomPracticePool] = useState<KanjiItem[] | null>(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  const { progress } = useStorage();
+  const { progress, settings, updateSettings } = useStorage();
 
   const toggleDarkMode = () => {
     setIsDark(!isDark);
@@ -28,8 +29,8 @@ function App() {
   // Derive learning pool from all kanji based on user status
   const currentLearningKanji = useMemo(() => {
     const list = ALL_KANJI.filter((k) => progress[k.id]?.status === 'learning');
-    return list.length > 0 ? list : ALL_KANJI.slice(0, 10);
-  }, [progress]);
+    return list.length > 0 ? list : ALL_KANJI.slice(0, settings.dailyTarget || 10);
+  }, [progress, settings.dailyTarget]);
 
   const handleStartPracticeWithIds = (kanjiIds: string[]) => {
     const selected = ALL_KANJI.filter((k) => kanjiIds.includes(k.id));
@@ -70,7 +71,7 @@ function App() {
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
-              <span>Kanji-Auswahl (2.678)</span>
+              <span>Kanji-Auswahl ({TOTAL_KANJI_COUNT.toLocaleString('de-DE')})</span>
             </button>
 
             <button
@@ -92,6 +93,15 @@ function App() {
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowSettingsModal(true)}
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Tagesziel & Einstellungen"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
+
             {activeTab === 'practice' && (
               <button
                 type="button"
@@ -115,6 +125,56 @@ function App() {
         </div>
       </header>
 
+      {/* Settings Modal (Daily Target 5-10, Backup Export/Import) */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <Sliders className="w-5 h-5 text-indigo-500" />
+              Tagesziel & Einstellungen
+            </h3>
+
+            <div className="space-y-5">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label htmlFor="daily-target-slider" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    Tägliches Schreibziel:
+                  </label>
+                  <span className="text-base font-extrabold text-indigo-600 dark:text-indigo-400">
+                    {settings.dailyTarget} Zeichen / Tag
+                  </span>
+                </div>
+                <input
+                  id="daily-target-slider"
+                  type="range"
+                  min="5"
+                  max="20"
+                  step="1"
+                  value={settings.dailyTarget}
+                  onChange={(e) => updateSettings({ dailyTarget: Number(e.target.value) })}
+                  className="w-full accent-indigo-600 cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-slate-400 mt-1">
+                  <span>5 Zeichen (Schnell)</span>
+                  <span>10 (Empfohlen)</span>
+                  <span>20 (Intensiv)</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowSettingsModal(false)}
+                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all"
+                >
+                  Fertig
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main View Area */}
       <main className="flex-1 w-full pb-10">
         {activeTab === 'browser' ? (
@@ -124,7 +184,7 @@ function App() {
             <PracticeView
               key={sessionKey}
               kanjiPool={customPracticePool || currentLearningKanji}
-              sessionSize={10}
+              sessionSize={settings.dailyTarget || 10}
               onBackToOverview={() => setActiveTab('browser')}
             />
           </div>
@@ -135,9 +195,9 @@ function App() {
       <footer className="mt-auto py-6 text-center text-xs text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40">
         <div className="flex items-center justify-center gap-1.5 mb-1 font-medium">
           <BookMarked className="w-3.5 h-3.5 text-indigo-500" />
-          <span>Tipp: Notiere dir jedes Kanji mit Strichfolge in einem echten Genkouyoushi- oder Tianzige-Heft.</span>
+          <span>Tipp: Notiere dir jedes Kanji mit Strichfolge in deinem Notizheft außerhalb der App.</span>
         </div>
-        <p className="opacity-80">Kanji Sensei • 2.678 Joyo & JLPT-Kanji mit deutscher Bedeutung</p>
+        <p className="opacity-80">Kanji Sensei • {TOTAL_KANJI_COUNT.toLocaleString('de-DE')} Joyo & JLPT-Kanji mit deutscher Bedeutung</p>
       </footer>
     </div>
   );
