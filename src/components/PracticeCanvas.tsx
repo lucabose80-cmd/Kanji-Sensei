@@ -41,8 +41,25 @@ export const PracticeCanvas: React.FC<PracticeCanvasProps> = ({
   const [currentStroke, setCurrentStroke] = useState<Stroke | null>(null);
   const [activePenSize, setActivePenSize] = useState<number>(lineWidth);
 
-  // Auto-detect ink color depending on dark mode if not provided
-  const inkColor = strokeColor || '#0f172a'; // Deep sumi ink
+  // Dynamic dark mode detection
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() =>
+    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
+  );
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const checkDark = () => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    };
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  // In dark mode: high-contrast crisp white (#f8fafc), in light mode: deep sumi ink (#0f172a)
+  const defaultInk = isDarkMode ? '#f8fafc' : '#0f172a';
+  const inkColor = strokeColor || defaultInk;
 
   // Redraw all strokes on canvas
   const renderStrokes = useCallback(
@@ -60,9 +77,17 @@ export const PracticeCanvas: React.FC<PracticeCanvasProps> = ({
       all.forEach((stroke) => {
         if (stroke.points.length === 0) return;
 
+        // Adapt theme default colors so strokes remain visible if user toggles theme
+        const strokeColorToUse =
+          stroke.color === '#0f172a' && isDarkMode
+            ? '#f8fafc'
+            : stroke.color === '#f8fafc' && !isDarkMode
+            ? '#0f172a'
+            : stroke.color;
+
         ctx.save();
-        ctx.strokeStyle = stroke.color;
-        ctx.fillStyle = stroke.color;
+        ctx.strokeStyle = strokeColorToUse;
+        ctx.fillStyle = strokeColorToUse;
         ctx.lineWidth = stroke.width * dpr;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -94,7 +119,7 @@ export const PracticeCanvas: React.FC<PracticeCanvasProps> = ({
         ctx.restore();
       });
     },
-    []
+    [isDarkMode]
   );
 
   // Setup canvas size with DPI scaling

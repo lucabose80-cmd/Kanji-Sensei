@@ -9,28 +9,39 @@ import type { KanjiItem } from './types/kanji';
 type ActiveTab = 'browser' | 'practice';
 
 function App() {
-  const [isDark, setIsDark] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
   const [activeTab, setActiveTab] = useState<ActiveTab>('browser');
   const [customPracticePool, setCustomPracticePool] = useState<KanjiItem[] | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const { progress, settings, updateSettings } = useStorage();
+  const isDark = settings.darkTheme;
 
   const toggleDarkMode = () => {
-    setIsDark(!isDark);
-    if (!isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    updateSettings({ darkTheme: !isDark });
   };
 
-  // Derive learning pool from all kanji based on user status
+  // Derive practice pool from all kanji based on user status and settings
   const currentLearningKanji = useMemo(() => {
-    const list = ALL_KANJI.filter((k) => progress[k.id]?.status === 'learning');
-    return list.length > 0 ? list : ALL_KANJI.slice(0, settings.dailyTarget || 10);
-  }, [progress, settings.dailyTarget]);
+    const learning = ALL_KANJI.filter((k) => progress[k.id]?.status === 'learning');
+    const known = ALL_KANJI.filter((k) => progress[k.id]?.status === 'known');
+    const unlearned = ALL_KANJI.filter((k) => !progress[k.id] || progress[k.id]?.status === 'unlearned');
+
+    let pool = [...learning];
+
+    // If includeKnownInPool is enabled, add 1-3 known kanji as refresher
+    if (settings.includeKnownInPool && known.length > 0) {
+      const shuffledKnown = [...known].sort(() => Math.random() - 0.5);
+      pool = [...pool, ...shuffledKnown.slice(0, 3)];
+    }
+
+    // If pool is still empty (e.g. freshly started app), take the first N5 / Grade 1 kanji
+    if (pool.length === 0) {
+      pool = unlearned.slice(0, settings.dailyTarget || 10);
+    }
+
+    return pool;
+  }, [progress, settings.dailyTarget, settings.includeKnownInPool]);
 
   const handleStartPracticeWithIds = (kanjiIds: string[]) => {
     const selected = ALL_KANJI.filter((k) => kanjiIds.includes(k.id));
@@ -159,6 +170,39 @@ function App() {
                   <span>10 (Empfohlen)</span>
                   <span>20 (Intensiv)</span>
                 </div>
+              </div>
+
+              {/* Include Mastered / Known Kanji Refresher Toggle */}
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={settings.includeKnownInPool}
+                    onChange={(e) => updateSettings({ includeKnownInPool: e.target.checked })}
+                    className="mt-1 w-4 h-4 rounded text-indigo-600 accent-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                  />
+                  <div>
+                    <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                      Gemeisterte Kanji ("Kann ich") einstreuen
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Streut gelegentlich 1–3 bereits gemeisterte Zeichen zur Auffrischung in die Tagesübung ein, damit du sie nicht vergisst.
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {/* Learning System Info Box */}
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+                <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>📈 Wie funktioniert das Aufstiegssystem?</span>
+                </div>
+                <p>
+                  • <strong>Aufstieg:</strong> Ein Zeichen in <em>„Lerne ich“</em> steigt automatisch zu <em>„Kann ich“</em> auf, wenn du es <strong>mindestens 3-mal</strong> geübt hast und eine Trefferquote von <strong>≥ 75%</strong> erreichst.
+                </p>
+                <p>
+                  • <strong>Herausfallen:</strong> Klickst du bei einem gemeisterten Zeichen auf <em>„Noch nicht sicher“</em>, wird es automatisch wieder auf <em>„Lerne ich“</em> zurückgestuft.
+                </p>
               </div>
 
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end">

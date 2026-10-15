@@ -22,6 +22,7 @@ import type { KanjiItem, SessionResultItem, PracticeSessionStats } from '../type
 import { INITIAL_LEARNING_POOL } from '../data/mockKanji';
 import { KanjiGridBox } from './KanjiGridBox';
 import { PracticeCanvas } from './PracticeCanvas';
+import { recordKanjiReview, getKanjiProgress } from '../services/storageService';
 
 export interface PracticeViewProps {
   kanjiPool?: KanjiItem[];
@@ -70,6 +71,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const [userDrawing, setUserDrawing] = useState<string>('');
   const [canvasStrokeCount, setCanvasStrokeCount] = useState<number>(0);
   const [repeatNotice, setRepeatNotice] = useState<string | null>(null);
+  const [promotionNotice, setPromotionNotice] = useState<string | null>(null);
 
   // Streak state (loaded with default or localStorage)
   const [streakDays, setStreakDays] = useState<number>(() => {
@@ -137,11 +139,20 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const handleMarkWrong = () => {
     if (!currentItem) return;
 
-    // Show temporary toast notice
-    setRepeatNotice(`"${currentItem.kanji.primaryMeaning}" wird am Ende der Session noch einmal geübt!`);
+    // Record review in storage service (counts as incorrect attempt)
+    const prevProgress = getKanjiProgress(currentItem.kanji.id);
+    const reviewResult = recordKanjiReview(currentItem.kanji.id, false);
+
+    // If it was previously known, notify user that it fell back to learning
+    if (prevProgress.status === 'known' && reviewResult.progress.status === 'learning') {
+      setRepeatNotice(`"${currentItem.kanji.primaryMeaning}" war unsicher ➔ Zurück in "Lerne ich" eingestuft.`);
+    } else {
+      setRepeatNotice(`"${currentItem.kanji.primaryMeaning}" wird am Ende der Session noch einmal geübt!`);
+    }
+
     setTimeout(() => {
       setRepeatNotice(null);
-    }, 2800);
+    }, 3200);
 
     setTotalRepeatsNeeded((prev) => prev + 1);
 
@@ -164,10 +175,20 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const handleMarkCorrect = () => {
     if (!currentItem) return;
 
+    const isFirstTry = currentItem.attempts === 0;
+    const prevProgress = getKanjiProgress(currentItem.kanji.id);
+    const reviewResult = recordKanjiReview(currentItem.kanji.id, isFirstTry);
+
+    // Check if auto-promoted from 'learning' to 'known'
+    if (prevProgress.status === 'learning' && reviewResult.progress.status === 'known') {
+      setPromotionNotice(`🎉 "${currentItem.kanji.primaryMeaning}" gemeistert! Aufgestiegen zu "Kann ich" 🟢`);
+      setTimeout(() => setPromotionNotice(null), 3800);
+    }
+
     const result: SessionResultItem = {
       kanji: currentItem.kanji,
       attempts: currentItem.attempts + 1,
-      masteredFirstTry: currentItem.attempts === 0,
+      masteredFirstTry: isFirstTry,
       userDrawingDataUrl: userDrawing || undefined,
     };
 
@@ -430,6 +451,14 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             <span>{repeatNotice}</span>
           </div>
         )}
+
+        {/* Promotion to 'known' celebration notice */}
+        {promotionNotice && (
+          <div className="mt-2.5 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-400 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 text-xs font-bold flex items-center gap-2 shadow-sm animate-pulse">
+            <Sparkles className="w-4 h-4 shrink-0 text-emerald-500" />
+            <span>{promotionNotice}</span>
+          </div>
+        )}
       </div>
 
       {/* Main Study Card */}
@@ -584,10 +613,17 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                     <PenTool className="w-3 h-3" /> Deine Zeichnung
                   </span>
                   <div className="relative overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-amber-50/20 dark:bg-slate-900/90 w-[200px] h-[200px] flex items-center justify-center shadow-inner">
+                    <svg
+                      viewBox="0 0 100 100"
+                      className="absolute inset-0 w-full h-full pointer-events-none"
+                    >
+                      <line x1="50" y1="0" x2="50" y2="100" strokeDasharray="3,3" strokeWidth="0.8" className="stroke-red-300 dark:stroke-red-800/60" />
+                      <line x1="0" y1="50" x2="100" y2="50" strokeDasharray="3,3" strokeWidth="0.8" className="stroke-red-300 dark:stroke-red-800/60" />
+                    </svg>
                     <img
                       src={userDrawing}
                       alt="Benutzer-Zeichnung"
-                      className="w-full h-full object-contain"
+                      className="relative z-10 w-full h-full object-contain"
                     />
                   </div>
                 </div>
