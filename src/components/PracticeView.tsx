@@ -22,7 +22,8 @@ import type { KanjiItem, SessionResultItem, PracticeSessionStats } from '../type
 import { INITIAL_LEARNING_POOL } from '../data/mockKanji';
 import { KanjiGridBox } from './KanjiGridBox';
 import { PracticeCanvas } from './PracticeCanvas';
-import { recordKanjiReview, getKanjiProgress } from '../services/storageService';
+import { recordKanjiReview, getKanjiProgress, getDailySession } from '../services/storageService';
+import radicalDecompositions from '../data/radicalDecompositions.json';
 
 export interface PracticeViewProps {
   kanjiPool?: KanjiItem[];
@@ -43,7 +44,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   sessionSize = 5,
   onFinishSession,
   onBackToOverview,
-  initialStreak = 3,
+  initialStreak = 0,
 }) => {
   // 1. Initialise practice session queue
   const initialBatch = useMemo(() => {
@@ -73,13 +74,24 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const [repeatNotice, setRepeatNotice] = useState<string | null>(null);
   const [promotionNotice, setPromotionNotice] = useState<string | null>(null);
 
-  // Streak state (loaded with default or localStorage)
+  // Streak state (loaded from getDailySession or localStorage)
   const [streakDays, setStreakDays] = useState<number>(() => {
+    try {
+      const session = getDailySession();
+      if (typeof session.currentStreak === 'number') {
+        return session.currentStreak;
+      }
+    } catch {}
     const saved = localStorage.getItem('kanji_practice_streak');
     return saved ? parseInt(saved, 10) : initialStreak;
   });
 
   const currentItem = queue[0] || null;
+  const currentKanjiChar = currentItem?.kanji.kanji || '';
+  const decompositions: Array<{ symbol: string; name: string }> = useMemo(() => {
+    if (!currentKanjiChar) return [];
+    return (radicalDecompositions as Record<string, Array<{ symbol: string; name: string }>>)[currentKanjiChar] || [];
+  }, [currentKanjiChar]);
 
   // Trigger celebration on session finish
   const hasTriggeredConfetti = useRef<boolean>(false);
@@ -429,9 +441,12 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                 Noch {remainingInQueue} in Warteschlange
               </span>
             )}
-            <span className="inline-flex items-center gap-1 font-bold text-orange-500">
+            <span
+              className="inline-flex items-center gap-1 font-bold text-orange-500"
+              title={`${streakDays} ${streakDays === 1 ? 'Tag' : 'Tage'} in Folge geübt`}
+            >
               <Flame className="w-4 h-4 fill-current" />
-              {streakDays}d
+              <span>{streakDays} {streakDays === 1 ? 'Tag' : 'Tage'}</span>
             </span>
           </div>
         </div>
@@ -539,6 +554,27 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                       {currentItem.kanji.radical.symbol} ({currentItem.kanji.radical.meaning})
                     </span>
                   </div>
+
+                  {decompositions && decompositions.length > 0 && (
+                    <div className="col-span-3 mt-1 pt-2 border-t border-slate-200 dark:border-slate-700/60 text-left">
+                      <span className="text-slate-400 block text-[10px] uppercase font-bold mb-1">
+                        🧩 Bausteine (Radikale):
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {decompositions.map((comp, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-800 dark:text-slate-200"
+                          >
+                            <span className="font-serif font-bold text-indigo-600 dark:text-indigo-400">
+                              {comp.symbol}
+                            </span>
+                            <span>{comp.name}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -688,13 +724,37 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
                 </div>
 
                 <div className="font-medium">
-                  <span className="text-slate-400">Radikal:</span>{' '}
+                  <span className="text-slate-400">Hauptradikal:</span>{' '}
                   <span className="font-bold text-slate-800 dark:text-slate-200">
                     {currentItem.kanji.radical.symbol}
                   </span>{' '}
                   ({currentItem.kanji.radical.meaning})
                 </div>
               </div>
+
+              {/* Radical Decomposition (Bausteine / Zerlegung) */}
+              {decompositions && decompositions.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700/60">
+                  <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                    <span>🧩 Bausteine / Radikale:</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {decompositions.map((comp, idx) => (
+                      <div
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xs text-xs"
+                      >
+                        <span className="font-serif font-bold text-base text-indigo-600 dark:text-indigo-400">
+                          {comp.symbol}
+                        </span>
+                        <span className="text-slate-700 dark:text-slate-200 font-medium">
+                          {comp.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Example Compounds (Jukugo) & Sentences with Furigana */}

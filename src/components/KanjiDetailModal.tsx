@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import type { KanjiItem } from '../types/kanji';
 import type { KanjiStatus } from '../types/storage';
 import { KanjiGridBox } from './KanjiGridBox';
+import radicalDecompositions from '../data/radicalDecompositions.json';
 import {
   X,
   Volume2,
@@ -189,7 +190,7 @@ export const KanjiDetailModal: React.FC<KanjiDetailModalProps> = ({
               {/* Radical / Busshu Info */}
               {kanji.radical && (
                 <div className="pt-2 text-xs text-slate-600 dark:text-slate-400 flex items-center justify-center sm:justify-start gap-2">
-                  <span className="font-semibold text-slate-500">Radikal:</span>
+                  <span className="font-semibold text-slate-500">Hauptradikal:</span>
                   <span
                     lang="ja"
                     className="font-serif px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 font-bold"
@@ -199,6 +200,30 @@ export const KanjiDetailModal: React.FC<KanjiDetailModalProps> = ({
                   <span>{kanji.radical.meaning || kanji.radical.name}</span>
                 </div>
               )}
+
+              {/* Radical Decomposition (Bausteine) */}
+              {(() => {
+                const comps = (radicalDecompositions as Record<string, Array<{ symbol: string; name: string }>>)[kanji.kanji] || [];
+                if (comps.length === 0) return null;
+                return (
+                  <div className="pt-2 text-xs text-slate-600 dark:text-slate-400">
+                    <span className="font-semibold text-slate-500 block mb-1">🧩 Bausteine (Radikale):</span>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5">
+                      {comps.map((c, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-medium"
+                        >
+                          <span className="font-serif font-bold text-indigo-600 dark:text-indigo-400">
+                            {c.symbol}
+                          </span>
+                          <span>{c.name}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
