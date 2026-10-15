@@ -3,8 +3,9 @@ import PracticeView from './components/PracticeView';
 import { KanjiBrowser } from './components/KanjiBrowser';
 import { ALL_KANJI, TOTAL_KANJI_COUNT } from './data/allKanji';
 import { useStorage } from './hooks/useStorage';
-import { BookMarked, Moon, Sun, RotateCcw, LayoutGrid, PenTool, Sliders } from 'lucide-react';
+import { BookMarked, Moon, Sun, RotateCcw, LayoutGrid, PenTool, Sliders, Download, Upload } from 'lucide-react';
 import type { KanjiItem } from './types/kanji';
+import { downloadBackupFile, uploadBackupFile } from './services/storageService';
 
 type ActiveTab = 'browser' | 'practice';
 
@@ -13,6 +14,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('browser');
   const [customPracticePool, setCustomPracticePool] = useState<KanjiItem[] | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [backupNotice, setBackupNotice] = useState<string | null>(null);
 
   const { progress, settings, updateSettings } = useStorage();
   const isDark = settings.darkTheme;
@@ -170,7 +172,7 @@ function App() {
       {/* Settings Modal (Daily Target 5-10, Backup Export/Import) */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Sliders className="w-5 h-5 text-indigo-500" />
               Tagesziel & Einstellungen
@@ -302,6 +304,60 @@ function App() {
                 <p>
                   • <strong>Herausfallen:</strong> Klickst du bei einem gemeisterten Zeichen auf <em>„Noch nicht sicher“</em>, wird es automatisch wieder auf <em>„Lerne ich“</em> zurückgestuft.
                 </p>
+              </div>
+
+              {/* Backup & Restore Section */}
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="text-sm font-semibold text-slate-900 dark:text-white flex items-center justify-between">
+                  <span>💾 Datensicherung & Übertragung</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Lade deinen Lernstand als JSON-Datei herunter (Backup) oder importiere ihn auf einem neuen Smartphone:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      downloadBackupFile();
+                      setBackupNotice('✓ Backup erfolgreich heruntergeladen!');
+                      setTimeout(() => setBackupNotice(null), 3000);
+                    }}
+                    className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-indigo-500" />
+                    <span>Backup exportieren</span>
+                  </button>
+
+                  <label className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer active:scale-95">
+                    <Upload className="w-4 h-4 text-emerald-500" />
+                    <span>Backup importieren</span>
+                    <input
+                      type="file"
+                      accept=".json"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const res = await uploadBackupFile(file);
+                        if (res.success) {
+                          setBackupNotice('✓ ' + res.message);
+                          setSessionKey((k) => k + 1);
+                        } else {
+                          setBackupNotice('❌ ' + res.message);
+                        }
+                        setTimeout(() => setBackupNotice(null), 4000);
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {backupNotice && (
+                  <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs text-center font-medium animate-fade-in">
+                    {backupNotice}
+                  </div>
+                )}
               </div>
 
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end">
