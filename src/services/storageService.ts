@@ -19,6 +19,7 @@ const STORAGE_KEYS = {
 export const DEFAULT_SETTINGS: UserSettings = {
   dailyTarget: 10,
   includeKnownInPool: false,
+  fillStrategy: 'unlearned',
   darkTheme: true,
   soundEnabled: true,
   hapticFeedback: true,

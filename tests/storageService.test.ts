@@ -52,13 +52,15 @@ async function runTests() {
   const initialSettings = getSettings();
   assert(initialSettings.dailyTarget === 10, 'Default dailyTarget is 10');
   assert(initialSettings.includeKnownInPool === false, 'Default includeKnownInPool is false');
+  assert(initialSettings.fillStrategy === 'unlearned', 'Default fillStrategy is unlearned');
   assert(initialSettings.darkTheme === true, 'Default darkTheme is true');
 
   // Test 2: Save Settings with validation
-  saveSettings({ dailyTarget: 15, includeKnownInPool: true });
+  saveSettings({ dailyTarget: 15, includeKnownInPool: true, fillStrategy: 'known' });
   const updatedSettings = getSettings();
   assert(updatedSettings.dailyTarget === 15, 'Updated dailyTarget to 15');
   assert(updatedSettings.includeKnownInPool === true, 'Updated includeKnownInPool to true');
+  assert(updatedSettings.fillStrategy === 'known', 'Updated fillStrategy to known');
 
   saveSettings({ dailyTarget: 999 }); // Should clamp to max 50
   assert(getSettings().dailyTarget === 50, 'Clamped invalid dailyTarget to 50');

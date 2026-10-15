@@ -15,9 +15,12 @@ export interface KanjiProgress {
   history?: KanjiReviewRecord[];
 }
 
+export type FillStrategy = 'unlearned' | 'known';
+
 export interface UserSettings {
   dailyTarget: number; // Standard 10, einstellbar z. B. 5-20
   includeKnownInPool: boolean; // Gemeisterte Kanji in den Tagespool aufnehmen
+  fillStrategy: FillStrategy; // 'unlearned' (mit nächsten neuen Zeichen auffüllen) | 'known' (mit bereits gelernten/gemeisterten Zeichen auffüllen)
   darkTheme: boolean; // Dunkler Modus
   soundEnabled?: boolean;
   hapticFeedback?: boolean;

@@ -259,6 +259,8 @@ export interface DailyBatchOptions {
   grade?: number;
   /** Whether to include already known/mastered kanji in the practice session (default: false) */
   includeKnown?: boolean;
+  /** Strategy to fill remaining slots when learning pool has fewer than targetCount items ('unlearned' | 'known') */
+  fillStrategy?: 'unlearned' | 'known';
 }
 
 /**
@@ -266,11 +268,14 @@ export interface DailyBatchOptions {
  *
  * Algorithm:
  * 1. Prioritizes Kanji in 'learning' status (Spaced Repetition Review queue).
- * 2. Next, fills remaining slots with 'unlearned' Kanji in educational progression order.
- * 3. If the user has mastered all target kanji or `includeKnown` is enabled, incorporates 'known' kanji for refreshers.
+ * 2. Next, fills remaining slots according to `fillStrategy`:
+ *    - 'unlearned' (default): Takes next unlearned Kanji in educational sequence.
+ *    - 'known': Takes already mastered Kanji ('known') as refresher exercises.
+ * 3. Graceful fallback if chosen pool is depleted.
  */
 export function getDailyKanjiBatch(options: DailyBatchOptions = {}): KanjiEntry[] {
   const targetCount = Math.max(5, Math.min(25, options.count ?? 10));
+  const strategy = options.fillStrategy ?? 'unlearned';
 
   // Determine eligible candidate pool based on filters
   let candidates = ALL_KANJI;
@@ -324,22 +329,41 @@ export function getDailyKanjiBatch(options: DailyBatchOptions = {}): KanjiEntry[
     selected.push(learningPool[i]);
   }
 
-  // 2. Fill remaining slots from unlearned pool (in educational sequence)
-  for (let i = 0; i < unlearnedPool.length && selected.length < targetCount; i++) {
-    selected.push(unlearnedPool[i]);
+  // 2. Fill remaining slots according to user's configured fillStrategy
+  if (strategy === 'known') {
+    // User wants to fill remaining slots with already learned/mastered kanji
+    const shuffledKnown = [...knownPool].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < shuffledKnown.length && selected.length < targetCount; i++) {
+      if (!selected.some((s) => s.id === shuffledKnown[i].id)) {
+        selected.push(shuffledKnown[i]);
+      }
+    }
+    // If known pool was depleted, fallback to unlearned
+    for (let i = 0; i < unlearnedPool.length && selected.length < targetCount; i++) {
+      if (!selected.some((s) => s.id === unlearnedPool[i].id)) {
+        selected.push(unlearnedPool[i]);
+      }
+    }
+  } else {
+    // Default 'unlearned': Fill remaining slots from unlearned pool (in educational sequence)
+    for (let i = 0; i < unlearnedPool.length && selected.length < targetCount; i++) {
+      if (!selected.some((s) => s.id === unlearnedPool[i].id)) {
+        selected.push(unlearnedPool[i]);
+      }
+    }
+    // If unlearned pool was depleted, fallback to known
+    const shuffledKnown = [...knownPool].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < shuffledKnown.length && selected.length < targetCount; i++) {
+      if (!selected.some((s) => s.id === shuffledKnown[i].id)) {
+        selected.push(shuffledKnown[i]);
+      }
+    }
   }
 
   // 3. If still not full, take remaining from learning pool
   for (let i = maxLearningToTake; i < learningPool.length && selected.length < targetCount; i++) {
-    selected.push(learningPool[i]);
-  }
-
-  // 4. If still not full and includeKnown is true (or unlearned is depleted), sample from known
-  if (selected.length < targetCount && (options.includeKnown || unlearnedPool.length === 0)) {
-    // Random shuffle known pool for refresher variety
-    const shuffledKnown = [...knownPool].sort(() => Math.random() - 0.5);
-    for (let i = 0; i < shuffledKnown.length && selected.length < targetCount; i++) {
-      selected.push(shuffledKnown[i]);
+    if (!selected.some((s) => s.id === learningPool[i].id)) {
+      selected.push(learningPool[i]);
     }
   }
 

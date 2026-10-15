@@ -31,17 +31,48 @@ function App() {
 
     // If includeKnownInPool is enabled, add 1-3 known kanji as refresher
     if (settings.includeKnownInPool && known.length > 0) {
-      const shuffledKnown = [...known].sort(() => Math.random() - 0.5);
+      const eligibleKnown = known.filter((k) => !pool.some((p) => p.id === k.id));
+      const shuffledKnown = [...eligibleKnown].sort(() => Math.random() - 0.5);
       pool = [...pool, ...shuffledKnown.slice(0, 3)];
     }
 
-    // If pool is still empty (e.g. freshly started app), take the first N5 / Grade 1 kanji
+    const target = settings.dailyTarget || 10;
+    const remainingSlots = target - pool.length;
+
+    // Intelligent Filling if active pool has fewer than dailyTarget kanji:
+    if (remainingSlots > 0) {
+      if (settings.fillStrategy === 'known') {
+        // Option B: Fill remaining slots with already learned/mastered kanji ("Kann ich")
+        const eligibleKnown = known.filter((k) => !pool.some((p) => p.id === k.id));
+        const shuffledKnown = [...eligibleKnown].sort(() => Math.random() - 0.5);
+        pool = [...pool, ...shuffledKnown.slice(0, remainingSlots)];
+
+        // Fallback to unlearned if known pool does not have enough kanji
+        if (pool.length < target) {
+          const eligibleUnlearned = unlearned.filter((k) => !pool.some((p) => p.id === k.id));
+          pool = [...pool, ...eligibleUnlearned.slice(0, target - pool.length)];
+        }
+      } else {
+        // Option A (Default): Fill remaining slots with next unlearned kanji in school grade order
+        const eligibleUnlearned = unlearned.filter((k) => !pool.some((p) => p.id === k.id));
+        pool = [...pool, ...eligibleUnlearned.slice(0, remainingSlots)];
+
+        // Fallback to known if unlearned pool is completely finished
+        if (pool.length < target) {
+          const eligibleKnown = known.filter((k) => !pool.some((p) => p.id === k.id));
+          const shuffledKnown = [...eligibleKnown].sort(() => Math.random() - 0.5);
+          pool = [...pool, ...shuffledKnown.slice(0, target - pool.length)];
+        }
+      }
+    }
+
+    // Safety fallback
     if (pool.length === 0) {
-      pool = unlearned.slice(0, settings.dailyTarget || 10);
+      pool = ALL_KANJI.slice(0, target);
     }
 
     return pool;
-  }, [progress, settings.dailyTarget, settings.includeKnownInPool]);
+  }, [progress, settings.dailyTarget, settings.includeKnownInPool, settings.fillStrategy]);
 
   const handleStartPracticeWithIds = (kanjiIds: string[]) => {
     const selected = ALL_KANJI.filter((k) => kanjiIds.includes(k.id));
@@ -169,6 +200,74 @@ function App() {
                   <span>5 Zeichen (Schnell)</span>
                   <span>10 (Empfohlen)</span>
                   <span>20 (Intensiv)</span>
+                </div>
+              </div>
+
+              {/* Fill Strategy Selector */}
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Fehlende Tagesplätze auffüllen mit:
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Wenn du aktuell weniger Zeichen in „Lerne ich“ hast als dein Tagesziel (z. B. 6 von 10):
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => updateSettings({ fillStrategy: 'unlearned' })}
+                    className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                      settings.fillStrategy === 'unlearned'
+                        ? 'border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-950 dark:text-indigo-200 ring-2 ring-indigo-500/20 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-xs flex items-center gap-1.5">
+                        <span>⚪</span> Neuen Zeichen
+                      </span>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          settings.fillStrategy === 'unlearned'
+                            ? 'border-indigo-600 bg-indigo-600'
+                            : 'border-slate-300 dark:border-slate-600'
+                        }`}
+                      >
+                        {settings.fillStrategy === 'unlearned' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Nächste noch ungelernte Kanji nach Schulstufe (Grade 1 ➔ 2...)
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => updateSettings({ fillStrategy: 'known' })}
+                    className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                      settings.fillStrategy === 'known'
+                        ? 'border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-950 dark:text-indigo-200 ring-2 ring-indigo-500/20 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-xs flex items-center gap-1.5">
+                        <span>🟢</span> Bereits Gelernten
+                      </span>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          settings.fillStrategy === 'known'
+                            ? 'border-indigo-600 bg-indigo-600'
+                            : 'border-slate-300 dark:border-slate-600'
+                        }`}
+                      >
+                        {settings.fillStrategy === 'known' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Bereits gemeisterte Kanji („Kann ich“) zur Wiederholung
+                    </span>
+                  </button>
                 </div>
               </div>
 
